@@ -10,11 +10,14 @@ import Login from './pages/Login.jsx'
 import Placeorder from './pages/Placeorder.jsx'
 import Orders from './pages/Orders.jsx'
 import Navbar from './components/Navbar.jsx'
+import Footer from './components/Footer.jsx'
+import SearchBar from './components/SearchBar.jsx'
 
 const App = () => {
   return (
     <div className='px-4 sm:px-[5vw] md: px-[7vw] 1g:px-[9vw]'>
       <Navbar />
+      <SearchBar />
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/collection' element={<Collection />} />
@@ -26,6 +29,7 @@ const App = () => {
         <Route path='/place-order' element={<Placeorder />} />
         <Route path='/orders' element={<Orders />} />
       </Routes>
+      <Footer />
     </div>
   )
 }

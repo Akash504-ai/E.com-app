@@ -1,10 +1,13 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { assets } from '../assets/assets'
 import { Link, NavLink } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
+import { ShopContext } from '../context/ShopContext'
 
 const Navbar = () => {
   const [open, setOpen] = useState(false)
+
+  const {setShowSearch} = useContext(ShopContext)
 
   const linkStyle = ({ isActive }) =>
     `text-sm font-medium transition ${
@@ -13,16 +16,26 @@ const Navbar = () => {
         : 'text-gray-700 hover:text-pink-600'
     }`
 
+  const mobileLinkStyle = ({ isActive }) =>
+  `py-2 px-3 rounded-md transition ${
+    isActive
+      ? 'bg-pink-100 text-pink-600 font-semibold'
+      : 'text-gray-800 hover:bg-gray-100'
+  }`
+
+
   return (
     <nav className="w-full bg-white shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
 
         {/* LOGO */}
-        <img
-          src={assets.logo}
-          alt="DailyFit"
-          className="h-9 scale-150 origin-left cursor-pointer"
-        />
+        <Link to='/'>
+          <img
+            src={assets.logo}
+            alt="DailyFit"
+            className="h-11 scale-173 origin-left cursor-pointer"
+          />
+        </Link>
 
         {/* Desktop Menu */}
         <ul className="hidden md:flex items-center gap-8">
@@ -37,6 +50,7 @@ const Navbar = () => {
 
           {/* Search */}
           <img
+            onClick={()=>setShowSearch(true)}
             src={assets.search_icon}
             alt="Search"
             className="w-5 h-5 cursor-pointer"
@@ -84,21 +98,62 @@ const Navbar = () => {
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden text-gray-700"
-          onClick={() => setOpen(!open)}
+          className="md:hidden text-gray-700 z-50"
+          onClick={() => setOpen(true)}
         >
-          {open ? <X size={26} /> : <Menu size={26} />}
+          <Menu size={26} />
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Overlay */}
       {open && (
-        <div className="md:hidden bg-white shadow-md">
-          <ul className="flex flex-col gap-4 px-6 py-4">
-            <NavLink onClick={() => setOpen(false)} to="/" className={linkStyle}>HOME</NavLink>
-            <NavLink onClick={() => setOpen(false)} to="/collection" className={linkStyle}>COLLECTION</NavLink>
-            <NavLink onClick={() => setOpen(false)} to="/about" className={linkStyle}>ABOUT</NavLink>
-            <NavLink onClick={() => setOpen(false)} to="/contact" className={linkStyle}>CONTACT</NavLink>
+        <div className="fixed inset-0 bg-white z-50 md:hidden">
+
+          {/* Top Bar */}
+          <div className="flex items-center justify-between px-6 py-4 border-b">
+            <img
+              src={assets.logo}
+              alt="DailyFit"
+              className="h-10"
+            />
+            <button onClick={() => setOpen(false)}>
+              <X size={28} />
+            </button>
+          </div>
+
+          {/* Menu Links */}
+          <ul className="flex flex-col gap-4 px-6 py-8 text-lg">
+            <NavLink
+              to="/"
+              className={mobileLinkStyle}
+              onClick={() => setOpen(false)}
+            >
+              HOME
+            </NavLink>
+
+            <NavLink
+              to="/collection"
+              className={mobileLinkStyle}
+              onClick={() => setOpen(false)}
+            >
+              COLLECTION
+            </NavLink>
+
+            <NavLink
+              to="/about"
+              className={mobileLinkStyle}
+              onClick={() => setOpen(false)}
+            >
+              ABOUT
+            </NavLink>
+
+            <NavLink
+              to="/contact"
+              className={mobileLinkStyle}
+              onClick={() => setOpen(false)}
+            >
+              CONTACT
+            </NavLink>
           </ul>
         </div>
       )}

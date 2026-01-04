@@ -35,7 +35,7 @@ const Hero = () => {
 
       {/* Hero Right Side */}
       <img
-        className="w-full sm:w-1/2 object-cover max-h-[480px]"
+        className="w-full sm:w-1/2 object-cover max-h-[585px]"
         src={assets.hero_img}
         alt="Hero"
       />
