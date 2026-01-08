@@ -6,12 +6,20 @@ import RelatedProduct from '../components/RelatedProduct'
 const Product = () => {
   const { productID } = useParams()
   const navigate = useNavigate()
-  const { products } = useContext(ShopContext)
+  const { products, addToCart } = useContext(ShopContext)
 
   const [product, setProduct] = useState(null)
   const [image, setImage] = useState('')
   const [size, setSize] = useState('')
   const [quantity, setQuantity] = useState(1)
+  const [activeTab, setActiveTab] = useState('description')
+
+  const [zoom, setZoom] = useState(false)
+  const [origin, setOrigin] = useState('center center')
+
+  const [lensPos, setLensPos] = useState({ x: 0, y: 0 })
+  const [showLens, setShowLens] = useState(false)
+
 
   /* ---------------- FIND PRODUCT ---------------- */
   useEffect(() => {
@@ -22,119 +30,131 @@ const Product = () => {
     }
   }, [products, productID])
 
+  /* ---------------- ADD TO CART ---------------- */
+  const handleAddToCart = () => {
+    addToCart(product._id, size, quantity)
+    setQuantity(1)
+    setSize('')
+  }
+
   if (!product) {
     return (
-      <div className="text-center py-20 text-gray-500">
+      <div className="text-center py-32 text-gray-400 text-sm">
         Product not found.
       </div>
     )
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-[5vw] md:px-[7vw] my-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-12">
 
-      {/* Back Button */}
+      {/* Back */}
       <button
         onClick={() => navigate(-1)}
-        className="mb-6 text-sm text-gray-600 hover:text-pink-600 transition"
+        className="mb-8 text-sm text-gray-500 hover:text-pink-600 transition"
       >
         ← Back to products
       </button>
 
-      <div className="flex flex-col md:flex-row gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
 
-        {/* ---------------- LEFT : IMAGES + DESCRIPTION ---------------- */}
-        <div className="md:w-5/12 md:sticky md:top-28 self-start">
+        {/* LEFT : IMAGES */}
+        <div className="lg:col-span-5 lg:sticky lg:top-24 self-start">
+          <div
+            className="relative bg-white border rounded-2xl aspect-square overflow-hidden shadow-sm"
+            onMouseEnter={() => setShowLens(true)}
+            onMouseLeave={() => setShowLens(false)}
+            onMouseMove={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect()
+              setLensPos({
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top,
+              })
+            }}
+          >
 
-          {/* Main Image */}
-          <div className="border rounded-xl overflow-hidden mb-4 max-h-[480px]">
+            {/* Main Image */}
             <img
               src={image}
               alt={product.name}
               className="w-full h-full object-contain"
             />
+
+            {/* Zoom Lens */}
+            {showLens && (
+              <div
+                className="absolute pointer-events-none rounded-full border border-gray-300 shadow-lg"
+                style={{
+                  width: 140,
+                  height: 140,
+                  top: lensPos.y - 70,
+                  left: lensPos.x - 70,
+                  backgroundImage: `url(${image})`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: '200%',
+                  backgroundPosition: `${(lensPos.x / 400) * 100}% ${(lensPos.y / 400) * 100}%`,
+                }}
+              />
+            )}
           </div>
 
-          {/* Thumbnails */}
-          <div className="flex gap-3 mb-8">
+
+          <div className="flex gap-3 mt-5 overflow-x-auto">
             {product.image.map((img, index) => (
               <img
                 key={index}
                 src={img}
-                alt=""
                 onClick={() => setImage(img)}
-                className={`w-20 h-20 object-cover border rounded cursor-pointer
-                  ${image === img ? 'border-pink-600' : 'border-gray-300'}`}
+                className={`w-20 h-20 rounded-xl object-cover cursor-pointer border transition
+                  ${image === img
+                    ? 'border-pink-600 ring-2 ring-pink-200'
+                    : 'border-gray-300 hover:border-gray-400'}`}
               />
             ))}
           </div>
-
-          {/* Description & Reviews */}
-          <div>
-
-            {/* Tabs */}
-            <div className="flex gap-6 border-b pb-2">
-              <button className="font-semibold border-b-2 border-pink-600 pb-2">
-                Description
-              </button>
-              <button className="text-gray-500">
-                Reviews (128)
-              </button>
-            </div>
-
-            {/* Content */}
-            <div className="mt-4 text-gray-600 text-sm leading-relaxed">
-              <p>
-                An e-commerce website is an online platform that allows businesses
-                to sell products and services over the internet.
-              </p>
-              <p className="mt-2">
-                E-commerce websites typically include product listings, shopping
-                carts, secure payment gateways, and order management systems.
-              </p>
-            </div>
-
-          </div>
         </div>
 
-        {/* ---------------- RIGHT : DETAILS ---------------- */}
-        <div className="md:w-7/12">
+        
 
-          <h1 className="text-2xl font-semibold text-gray-800">
-            {product.name}
-          </h1>
+        {/* RIGHT : DETAILS */}
+        <div className="lg:col-span-7">
+
+          {/* Title + Price */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <h1 className="text-2xl sm:text-3xl font-semibold text-gray-800">
+              {product.name}
+            </h1>
+            <p className="text-2xl font-semibold text-pink-600">
+              ₹{product.price}
+            </p>
+          </div>
+
+          {/* Stock */}
+          <span className="inline-block mt-3 text-xs font-medium bg-green-100 text-green-700 px-3 py-1 rounded-full">
+            In Stock
+          </span>
 
           {/* Ratings */}
-          <div className="flex items-center gap-2 mt-2">
-            <span className="text-yellow-500">★★★★☆</span>
+          <div className="flex items-center gap-2 mt-3">
+            <span className="text-yellow-500 text-sm">★★★★☆</span>
             <span className="text-sm text-gray-500">(128 reviews)</span>
           </div>
 
-          <p className="text-xl text-pink-600 font-medium mt-3">
-            ₹{product.price}
-          </p>
+          
 
-          <p className="mt-2 text-sm text-green-600 font-medium">
-            In Stock
-          </p>
-
-          <p className="text-gray-600 mt-4 leading-relaxed">
-            {product.description}
-          </p>
-
-          {/* Size Selection */}
+          {/* Sizes */}
           {product.sizes && (
-            <div className="mt-6">
-              <p className="font-medium mb-2">Select Size</p>
+            <div className="mt-10">
+              <p className="text-sm font-medium mb-3">Select Size</p>
               <div className="flex gap-3 flex-wrap">
                 {product.sizes.map((item, index) => (
                   <button
                     key={index}
                     onClick={() => setSize(item)}
-                    className={`border px-4 py-2 rounded
+                    className={`px-4 py-2 rounded-xl border text-sm transition
                       ${size === item
                         ? 'border-pink-600 bg-pink-50 text-pink-600'
-                        : 'border-gray-300 text-gray-700'}`}
+                        : 'border-gray-300 hover:border-gray-400'}`}
                   >
                     {item}
                   </button>
@@ -144,55 +164,63 @@ const Product = () => {
           )}
 
           {/* Quantity */}
-          <div className="mt-6">
-            <p className="font-medium mb-2">Quantity</p>
-            <div className="flex items-center gap-3">
+          <div className="mt-10">
+            <p className="text-sm font-medium mb-3">Quantity</p>
+            <div className="flex items-center gap-4">
               <button
                 onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                className="border px-3 py-1 rounded"
+                className="w-10 h-10 border rounded-xl hover:bg-gray-100"
               >
                 −
               </button>
-              <span>{quantity}</span>
+              <span className="text-sm font-medium">{quantity}</span>
               <button
                 onClick={() => setQuantity(q => q + 1)}
-                className="border px-3 py-1 rounded"
+                className="w-10 h-10 border rounded-xl hover:bg-gray-100"
               >
                 +
               </button>
             </div>
           </div>
 
-          {/* Add to Cart */}
-          <button
-            className="mt-8 bg-pink-600 text-white px-10 py-3 rounded
-                       hover:bg-pink-700 transition disabled:opacity-50"
-            disabled={product.sizes && !size}
-          >
-            ADD TO CART
-          </button>
+          {/* CTA */}
+          <div className="mt-12 flex flex-col sm:flex-row gap-4">
+            <button
+              onClick={handleAddToCart}
+              disabled={product.sizes && !size}
+              className="bg-pink-600 text-white px-10 py-3 rounded-xl font-medium
+                         hover:bg-pink-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Add to Cart
+            </button>
 
-          {/* Delivery Info */}
+            <button className="border px-10 py-3 rounded-xl font-medium hover:bg-gray-50 transition">
+              Buy Now
+            </button>
+          </div>
+
           <p className="mt-4 text-sm text-gray-500">
             🚚 Free delivery in 3–5 business days
           </p>
 
-          {/* Extra Info */}
-          <div className="mt-8 text-sm text-gray-500 space-y-2">
+          {/* Trust badges */}
+          <div className="mt-8 text-xs text-gray-500 space-y-1">
             <p>✔ 100% Original Products</p>
+            <p>✔ Easy 7-Day Returns</p>
             <p>✔ Cash on Delivery available</p>
-            <p>✔ Easy 7-day returns</p>
           </div>
 
         </div>
       </div>
 
-      {/* ---------------- RELATED PRODUCTS ---------------- */}
-      <RelatedProduct
-        category={product.category}
-        subCategory={product.subCategory}
-        productID={product._id}
-      />
+      {/* RELATED */}
+      <div className="mt-20">
+        <RelatedProduct
+          category={product.category}
+          subCategory={product.subCategory}
+          productID={product._id}
+        />
+      </div>
 
     </div>
   )

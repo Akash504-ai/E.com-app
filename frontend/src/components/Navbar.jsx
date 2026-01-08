@@ -7,7 +7,7 @@ import { ShopContext } from '../context/ShopContext'
 const Navbar = () => {
   const [open, setOpen] = useState(false)
 
-  const {setShowSearch} = useContext(ShopContext)
+  const {setShowSearch, getCartCount} = useContext(ShopContext)
 
   const linkStyle = ({ isActive }) =>
     `text-sm font-medium transition ${
@@ -90,7 +90,7 @@ const Navbar = () => {
             />
             <span className="absolute -top-2 -right-2 bg-pink-600 text-white text-xs 
                              w-5 h-5 rounded-full flex items-center justify-center">
-              10
+              {getCartCount()}
             </span>
           </Link>
 
