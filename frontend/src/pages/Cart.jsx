@@ -1,6 +1,7 @@
 import React, { useContext } from 'react'
 import { ShopContext } from '../context/ShopContext'
 import Title from '../components/Title'
+import { useNavigate } from 'react-router-dom'
 
 const Cart = () => {
   const {
@@ -10,6 +11,8 @@ const Cart = () => {
     getCartAmount,
     currency
   } = useContext(ShopContext)
+
+  const navigate = useNavigate()
 
   // Check if cart is empty
   const isCartEmpty = Object.keys(cartItems).length === 0
@@ -94,7 +97,7 @@ const Cart = () => {
                 <span>{currency}{getCartAmount()}</span>
               </div>
 
-              <button className="mt-6 w-full bg-pink-600 text-white py-3 rounded hover:bg-pink-700 transition">
+              <button onClick={()=>navigate('/place-order')} className="mt-6 w-full bg-pink-600 text-white py-3 rounded hover:bg-pink-700 transition">
                 Proceed to Checkout
               </button>
             </div>
