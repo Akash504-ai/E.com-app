@@ -2,6 +2,7 @@ import validator from "validator";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import userModel from "../models/userModel.js";
+import productModel from "../models/productModel.js";
 
 // 🔑 TOKEN CREATOR
 const createToken = (id) => {

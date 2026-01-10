@@ -1,89 +1,128 @@
-import { v2 as cloudinary } from "cloudinary"
-import productModel from "../models/productModel.js"
+import { v2 as cloudinary } from "cloudinary";
+import productModel from "../models/productModel.js";
+import fs from "fs";
 
-// fun to add product
-const addProduct = async(req,res) => {
-    try {
+/* ------------------ ADD PRODUCT ------------------ */
+const addProduct = async (req, res) => {
+  try {
+    console.log("REQ BODY:", req.body);
+    console.log("REQ FILES:", req.files);
 
-        const { name, description, price, category, subCategory, sizes, bestseller } = req.body
+    const {
+      name,
+      description,
+      price,
+      category,
+      subCategory,
+      sizes,
+      bestseller,
+    } = req.body;
 
-        const image1 = req.files.image1 && req.files.image1[0]
-        const image2 = req.files.image2 && req.files.image2[0]
-        const image3 = req.files.image3 && req.files.image3[0]
-        const image4 = req.files.image4 && req.files.image4[0]
-
-        const images = [image1,image2,image3,image4].filter((item)=>item!==undefined)
-
-        let imageurl = await Promise.all(
-            images.map(async(item)=>{
-                let result = await cloudinary.uploader.upload(item.path, {resource_type:'image'});
-                return result.secure_url
-            })
-        )
-
-        const productData = {
-            name, 
-            description, 
-            price: Number(price), 
-            category, 
-            subCategory, 
-            sizes: typeof sizes === "string" ? JSON.parse(sizes) : sizes, 
-            bestseller: bestseller === "true" ? true : false,
-            image: imageurl,
-            date: Date.now()
-        }
-
-        console.log(productData);
-        
-        const product = new productModel(productData);
-        await product.save()
-        
-        res.json({success:true, message:"Product Added"})
-        
-    } catch (error) {
-        console.error(error);
-        res.json({ success: false, message: error.message });
+    if (!name || !description || !price || !category || !subCategory || !sizes) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields",
+      });
     }
-}
 
-// fun to list product
-const listProduct = async(req,res) => {
-    try {
+    /* ---------------- FILE HANDLING ---------------- */
+    const files = req.files || {};
+    const images = [
+      files.image1?.[0],
+      files.image2?.[0],
+      files.image3?.[0],
+      files.image4?.[0],
+    ].filter(Boolean);
 
-        const products = await productModel.find({});
-        res.json({success:true,products})
-        
-    } catch (error) {
-        console.error(error);
-        res.json({ success: false, message: error.message });
+    let imageUrls = [];
+
+    /* ---------------- CLOUDINARY UPLOAD ---------------- */
+    if (images.length > 0) {
+      imageUrls = await Promise.all(
+        images.map(async (item) => {
+          const result = await cloudinary.uploader.upload(item.path, {
+            folder: "products",
+            resource_type: "image",
+          });
+
+          // 🔥 DELETE LOCAL FILE AFTER UPLOAD
+          try {
+            fs.unlinkSync(item.path);
+          } catch (err) {
+            console.warn("File delete failed:", err.message);
+          }
+
+          return result.secure_url;
+        })
+      );
     }
-}
 
-// fun to remove product
-const removeProduct = async(req,res) => {
-    try {
+    console.log("IMAGE URLS:", imageUrls);
 
-        await productModel.findByIdAndDelete(req.body.id)
-        res.json({ success: true, message: "Product Removed" });
+    /* ---------------- SAVE PRODUCT ---------------- */
+    const productData = {
+      name,
+      description,
+      price: Number(price),
+      category,
+      subCategory,
+      sizes: typeof sizes === "string" ? JSON.parse(sizes) : sizes,
+      bestseller: bestseller === "true",
+      image: imageUrls,
+      date: Date.now(),
+    };
 
-    } catch (error) {
-        console.error(error);
-        res.json({ success: false, message: error.message });
-    }
-}
+    const product = await productModel.create(productData);
 
-// fun to single product info
-const singleProduct = async(req,res) => {
-    try {
+    console.log("SAVED PRODUCT ID:", product._id);
 
-        const { productId } = req.body
-        const product = await productModel.findById(productId)
-        res.json({ success: true, product });
+    return res.status(201).json({
+      success: true,
+      message: "Product added successfully",
+      productId: product._id,
+    });
+  } catch (error) {
+    console.error("ADD PRODUCT ERROR:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
-    } catch (error) {
-        console.error(error);
-        res.json({ success: false, message: error.message });
-    }
-}
+/* ------------------ LIST PRODUCTS ------------------ */
+const listProduct = async (req, res) => {
+  try {
+    const products = await productModel.find({}).sort({ createdAt: -1 });
+    res.json({ success: true, products });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 
-export { addProduct, listProduct, removeProduct, singleProduct}
+/* ------------------ REMOVE PRODUCT ------------------ */
+const removeProduct = async (req, res) => {
+  try {
+    const { id } = req.body;
+    await productModel.findByIdAndDelete(id);
+    res.json({ success: true, message: "Product removed" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/* ------------------ SINGLE PRODUCT ------------------ */
+const singleProduct = async (req, res) => {
+  try {
+    const { productId } = req.body;
+    const product = await productModel.findById(productId);
+    res.json({ success: true, product });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export { addProduct, listProduct, removeProduct, singleProduct };

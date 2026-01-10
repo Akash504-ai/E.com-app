@@ -6,9 +6,9 @@ const connectDB = async () => {
       console.log("✅ DB Connected");
     });
 
-    await mongoose.connect(
-      `${process.env.MONGODB_URI}/e-commerce`
-    );
+    // ✅ DO NOT append database name again
+    await mongoose.connect(process.env.MONGODB_URI);
+    
   } catch (error) {
     console.error("❌ DB Connection Failed:", error.message);
     process.exit(1);

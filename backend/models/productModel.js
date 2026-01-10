@@ -11,13 +11,13 @@ const productSchema = new mongoose.Schema({
         type: Number, required: true
     },
     image: {
-        type: Array, required: true
+        type: Array, default: []
     },
     category: {
         type: String, required: true
     },
     subCategory: {
-        type: Array, required: true
+        type: String, required: true
     },
     sizes: {
         type: Array, required: true
@@ -30,6 +30,7 @@ const productSchema = new mongoose.Schema({
     },
 },{timestamps: true})
 
-const productModel = mongoose.models.product || mongoose.model("product",productSchema)
+const productModel =
+  mongoose.models.Product || mongoose.model("Product", productSchema);
 
 export default productModel;

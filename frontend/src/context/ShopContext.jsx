@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import { products } from "../assets/assets";
+import axios from "axios";
 import { toast } from "react-toastify";
 
 export const ShopContext = createContext();
@@ -10,14 +10,43 @@ const ShopContextProvider = (props) => {
   const currency = "₹";
   const delivery_fee = 10;
 
+  // ------------------ BACKEND URL ------------------
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   // ------------------ STATES ------------------
+  const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
+
   const [cartItems, setCartItems] = useState(() => {
-  const storedCart = localStorage.getItem("cartItems");
+    const storedCart = localStorage.getItem("cartItems");
     return storedCart ? JSON.parse(storedCart) : {};
   });
 
+  // ------------------ FETCH PRODUCTS ------------------
+  const fetchProducts = async () => {
+    try {
+      console.log("BACKEND URL:", backendUrl);
+
+      const res = await axios.get(`${backendUrl}/api/product/list`);
+      console.log("PRODUCT API RESPONSE:", res.data);
+
+      if (res.data?.success && Array.isArray(res.data.products)) {
+        setProducts(res.data.products);
+      } else {
+        toast.error("Unexpected product response");
+      }
+    } catch (error) {
+      console.error("FETCH PRODUCTS ERROR:", error);
+      toast.error("Server error while fetching products");
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  // ------------------ SAVE CART ------------------
   useEffect(() => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
@@ -101,7 +130,8 @@ const ShopContextProvider = (props) => {
     addToCart,
     removeFromCart,
     getCartCount,
-    getCartAmount
+    getCartAmount,
+    backendUrl
   };
 
   return (

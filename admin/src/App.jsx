@@ -41,8 +41,8 @@ const App = () => {
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
           <div className="bg-white rounded-xl shadow-sm p-4 md:p-6 min-h-full">
             <Routes>
-              <Route path="/add" element={<Add />} />
-              <Route path="/list" element={<List />} />
+              <Route path="/add" element={<Add token={token} />} />
+              <Route path="/list" element={<List token={token} />} />
               <Route path="/orders" element={<Order />} />
             </Routes>
           </div>
