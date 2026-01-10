@@ -65,7 +65,7 @@ const Cart = () => {
 
                   {/* Remove */}
                   <button
-                    onClick={() => removeFromCart(itemId, size)}
+                    onClick={() => removeFromCart(itemId, size, true)}
                     className="text-sm text-red-500 hover:text-red-600"
                   >
                     Remove
