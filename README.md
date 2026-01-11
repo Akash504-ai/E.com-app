@@ -81,12 +81,12 @@ E.com-app/
 
 ⚙️ Environment Variables
 Backend .env
-    MONGO_URI=
-    JWT_SECRET=
-    STRIPE_SECRET_KEY=
-    CLOUDINARY_NAME=
-    CLOUDINARY_API_KEY=
-    CLOUDINARY_API_SECRET=
+-     MONGO_URI=
+-     JWT_SECRET=
+-     STRIPE_SECRET_KEY=
+-     CLOUDINARY_NAME=
+-     CLOUDINARY_API_KEY=
+-     CLOUDINARY_API_SECRET=
 
 Frontend / Admin
     VITE_BACKEND_URL=
