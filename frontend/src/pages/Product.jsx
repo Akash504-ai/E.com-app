@@ -194,7 +194,7 @@ const Product = () => {
               Add to Cart
             </button>
 
-            <button className="border px-10 py-3 rounded-xl font-medium hover:bg-gray-50 transition">
+            <button onClick={() => navigate("/place-order")} className="border px-10 py-3 rounded-xl font-medium hover:bg-gray-50 transition">
               Buy Now
             </button>
           </div>
