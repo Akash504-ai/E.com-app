@@ -92,33 +92,33 @@ Frontend / Admin
     VITE_BACKEND_URL=
 
 🚀 Getting Started (Local Setup)
-1️⃣ Clone Repository
+- 1️⃣ Clone Repository
     git clone https://github.com/Akash504-ai/E.com-app.git
     cd E.com-app
 
-2️⃣ Backend
+- 2️⃣ Backend
     cd backend
     npm install
     npm run server
 
-3️⃣ Frontend
+- 3️⃣ Frontend
     cd frontend
     npm install
     npm run dev
 
-4️⃣ Admin Panel
+- 4️⃣ Admin Panel
     cd admin
     npm install
     npm run dev
 
 🏆 What This Project Demonstrates
-✔ Full MERN stack mastery
-✔ Secure authentication
-✔ Payment gateway integration
-✔ Real admin panel
-✔ Scalable architecture
-✔ Production deployment
-✔ Clean code organization
+- ✔ Full MERN stack mastery
+- ✔ Secure authentication
+- ✔ Payment gateway integration
+- ✔ Real admin panel
+- ✔ Scalable architecture
+- ✔ Production deployment
+- ✔ Clean code organization
 
 👨‍💻 Author
 
