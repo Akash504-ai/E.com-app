@@ -17,7 +17,6 @@ const PlaceOrder = () => {
 
   const [paymentMethod, setPaymentMethod] = useState('cod')
 
-  // ✅ controlled address state
   const [address, setAddress] = useState({
     firstName: '',
     lastName: '',
@@ -32,13 +31,11 @@ const PlaceOrder = () => {
 
   const navigate = useNavigate()
 
-  // ✅ safe input handler
   const handleChange = (e) => {
     const { name, value } = e.target
     setAddress(prev => ({ ...prev, [name]: value }))
   }
 
-  // ✅ validation
   const validateForm = () => {
     for (const key in address) {
       if (!address[key].trim()) {
@@ -55,7 +52,6 @@ const PlaceOrder = () => {
     return true
   }
 
-  // ✅ PLACE ORDER
   const placeOrderHandler = async () => {
     if (!token) {
       toast.error('Please login to place order')
@@ -82,19 +78,42 @@ const PlaceOrder = () => {
     }
 
     try {
-      const res = await axios.post(`${backendUrl}/api/order/place`, {
-        items,
-        amount: getCartAmount(),
-        address,
-        paymentMethod
-      })
+      // ---------------- COD ----------------
+      if (paymentMethod === 'cod') {
+        const res = await axios.post(
+          `${backendUrl}/api/order/place`,
+          { items, amount: getCartAmount(), address },
+          { headers: { Authorization: `Bearer ${token}` } }
+        )
 
-      if (res.data.success) {
-        toast.success('Order placed successfully')
-        navigate('/orders')
-      } else {
-        toast.error(res.data.message || 'Order failed')
+        if (res.data.success) {
+          toast.success('Order placed successfully')
+          navigate('/orders')
+        } else {
+          toast.error(res.data.message || 'Order failed')
+        }
       }
+
+      // ---------------- STRIPE ----------------
+      if (paymentMethod === 'stripe') {
+        const res = await axios.post(
+          `${backendUrl}/api/order/stripe`,
+          { items, amount: getCartAmount(), address },
+          { headers: { Authorization: `Bearer ${token}` } }
+        )
+
+        if (res.data.success) {
+          window.location.href = res.data.session_url
+        } else {
+          toast.error(res.data.message || 'Stripe payment failed')
+        }
+      }
+
+      // ---------------- RAZORPAY (later) ----------------
+      if (paymentMethod === 'razorpay') {
+        toast.info('Razorpay coming soon')
+      }
+
     } catch (error) {
       console.error(error)
       toast.error('Order placement failed')
@@ -104,78 +123,50 @@ const PlaceOrder = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-[5vw] md:px-[7vw] my-12 grid md:grid-cols-2 gap-10">
 
-      {/* ---------------- LEFT : DELIVERY INFO ---------------- */}
+      {/* LEFT */}
       <div>
         <Title text1="DELIVERY" text2="INFORMATION" />
-
         <div className="mt-6 space-y-4">
           <div className="flex gap-4">
-            <input className="input" name="firstName" value={address.firstName} onChange={handleChange} type="text" placeholder="First name" />
-            <input className="input" name="lastName" value={address.lastName} onChange={handleChange} type="text" placeholder="Last name" />
+            <input className="input" name="firstName" value={address.firstName} onChange={handleChange} placeholder="First name" />
+            <input className="input" name="lastName" value={address.lastName} onChange={handleChange} placeholder="Last name" />
           </div>
-
-          <input className="input" name="email" value={address.email} onChange={handleChange} type="email" placeholder="Email address" />
-          <input className="input" name="street" value={address.street} onChange={handleChange} type="text" placeholder="Street" />
-
+          <input className="input" name="email" value={address.email} onChange={handleChange} placeholder="Email address" />
+          <input className="input" name="street" value={address.street} onChange={handleChange} placeholder="Street" />
           <div className="flex gap-4">
-            <input className="input" name="city" value={address.city} onChange={handleChange} type="text" placeholder="City" />
-            <input className="input" name="state" value={address.state} onChange={handleChange} type="text" placeholder="State" />
+            <input className="input" name="city" value={address.city} onChange={handleChange} placeholder="City" />
+            <input className="input" name="state" value={address.state} onChange={handleChange} placeholder="State" />
           </div>
-
           <div className="flex gap-4">
-            <input className="input" name="zipcode" value={address.zipcode} onChange={handleChange} type="number" placeholder="Zipcode" />
-            <input className="input" name="country" value={address.country} onChange={handleChange} type="text" placeholder="Country" />
+            <input className="input" name="zipcode" value={address.zipcode} onChange={handleChange} placeholder="Zipcode" />
+            <input className="input" name="country" value={address.country} onChange={handleChange} placeholder="Country" />
           </div>
-
-          <input className="input" name="phone" value={address.phone} onChange={handleChange} type="number" placeholder="Phone" />
+          <input className="input" name="phone" value={address.phone} onChange={handleChange} placeholder="Phone" />
         </div>
       </div>
 
-      {/* ---------------- RIGHT : SUMMARY & PAYMENT ---------------- */}
+      {/* RIGHT */}
       <div>
-
         <div className="border rounded-xl p-6 mb-8">
           <h3 className="font-semibold text-lg mb-4">Order Summary</h3>
-
-          <div className="flex justify-between text-sm mb-2">
-            <span>Subtotal</span>
-            <span>{currency}{getCartAmount()}</span>
-          </div>
-
-          <div className="flex justify-between text-sm mb-4">
-            <span>Delivery</span>
-            <span>Free</span>
-          </div>
-
-          <div className="flex justify-between font-semibold text-lg border-t pt-4">
-            <span>Total</span>
-            <span>{currency}{getCartAmount()}</span>
-          </div>
+          <div className="flex justify-between"><span>Total</span><span>{currency}{getCartAmount()}</span></div>
         </div>
 
         <Title text1="PAYMENT" text2="METHOD" />
 
         <div className="mt-6 space-y-4">
           <div onClick={() => setPaymentMethod('stripe')} className={`payment-box ${paymentMethod === 'stripe' && 'active'}`}>
-            <span></span>
-            <img src={assets.stripe_logo} alt="Stripe" className="h-6" />
+            <img src={assets.stripe_logo} alt="Stripe" />
           </div>
-
-          <div onClick={() => setPaymentMethod('razorpay')} className={`payment-box ${paymentMethod === 'razorpay' && 'active'}`}>
-            <span></span>
-            <img src={assets.razorpay_logo} alt="Razorpay" className="h-6" />
-          </div>
-
+          {/* <div onClick={() => setPaymentMethod('razorpay')} className={`payment-box ${paymentMethod === 'razorpay' && 'active'}`}>
+            <img src={assets.razorpay_logo} alt="Razorpay" />
+          </div> */}
           <div onClick={() => setPaymentMethod('cod')} className={`payment-box ${paymentMethod === 'cod' && 'active'}`}>
-            <span></span>
-            <p className="font-medium">CASH ON DELIVERY</p>
+            CASH ON DELIVERY
           </div>
         </div>
 
-        <button
-          onClick={placeOrderHandler}
-          className="mt-8 w-full bg-pink-600 text-white py-3 rounded hover:bg-pink-700 transition"
-        >
+        <button onClick={placeOrderHandler} className="mt-8 w-full bg-pink-600 text-white py-3 rounded">
           PLACE ORDER
         </button>
       </div>
