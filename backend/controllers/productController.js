@@ -1,6 +1,5 @@
 import { v2 as cloudinary } from "cloudinary";
 import productModel from "../models/productModel.js";
-import fs from "fs";
 
 /* ------------------ ADD PRODUCT ------------------ */
 const addProduct = async (req, res) => {
@@ -58,21 +57,14 @@ const addProduct = async (req, res) => {
 
     /* ---------------- CLOUDINARY UPLOAD ---------------- */
     imageUrls = await Promise.all(
-      images.map(async (item) => {
-        const result = await cloudinary.uploader.upload(item.path, {
-          folder: "products",
-        });
-
-        // delete local file
-        try {
-          fs.unlinkSync(item.path);
-        } catch (err) {
-          console.warn("File delete failed:", err.message);
-        }
-
-        return result.secure_url;
-      })
-    );
+    images.map(async (item) => {
+      const result = await cloudinary.uploader.upload(
+        `data:${item.mimetype};base64,${item.buffer.toString("base64")}`,
+        { folder: "products" }
+      );
+      return result.secure_url;
+    })
+  );
 
     /* ---------------- SAVE PRODUCT ---------------- */
     const product = await productModel.create({
