@@ -18,15 +18,35 @@ const addProduct = async (req, res) => {
       bestseller,
     } = req.body;
 
-    if (!name || !description || !price || !category || !subCategory || !sizes) {
+    if (!name || !description || !price || !category || !subCategory) {
       return res.status(400).json({
         success: false,
         message: "Missing required fields",
       });
     }
 
-    /* ---------------- FILE HANDLING ---------------- */
-    const files = req.files || {};
+    /* ---------------- SIZE SAFE PARSE ---------------- */
+    let parsedSizes = [];
+    if (sizes && sizes !== "") {
+      parsedSizes = typeof sizes === "string" ? JSON.parse(sizes) : sizes;
+    }
+
+    if (parsedSizes.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "At least one size is required",
+      });
+    }
+
+    /* ---------------- IMAGE CHECK ---------------- */
+    if (!req.files || Object.keys(req.files).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "At least one image is required",
+      });
+    }
+
+    const files = req.files;
     const images = [
       files.image1?.[0],
       files.image2?.[0],
@@ -37,44 +57,35 @@ const addProduct = async (req, res) => {
     let imageUrls = [];
 
     /* ---------------- CLOUDINARY UPLOAD ---------------- */
-    if (images.length > 0) {
-      imageUrls = await Promise.all(
-        images.map(async (item) => {
-          const result = await cloudinary.uploader.upload(item.path, {
-            folder: "products",
-            resource_type: "image",
-          });
+    imageUrls = await Promise.all(
+      images.map(async (item) => {
+        const result = await cloudinary.uploader.upload(item.path, {
+          folder: "products",
+        });
 
-          // 🔥 DELETE LOCAL FILE AFTER UPLOAD
-          try {
-            fs.unlinkSync(item.path);
-          } catch (err) {
-            console.warn("File delete failed:", err.message);
-          }
+        // delete local file
+        try {
+          fs.unlinkSync(item.path);
+        } catch (err) {
+          console.warn("File delete failed:", err.message);
+        }
 
-          return result.secure_url;
-        })
-      );
-    }
-
-    console.log("IMAGE URLS:", imageUrls);
+        return result.secure_url;
+      })
+    );
 
     /* ---------------- SAVE PRODUCT ---------------- */
-    const productData = {
+    const product = await productModel.create({
       name,
       description,
       price: Number(price),
       category,
       subCategory,
-      sizes: typeof sizes === "string" ? JSON.parse(sizes) : sizes,
-      bestseller: bestseller === "true",
+      sizes: parsedSizes,
+      bestseller: bestseller === "true" || bestseller === true,
       image: imageUrls,
       date: Date.now(),
-    };
-
-    const product = await productModel.create(productData);
-
-    console.log("SAVED PRODUCT ID:", product._id);
+    });
 
     return res.status(201).json({
       success: true,

@@ -18,6 +18,7 @@ const Add = ({ token }) => {
 
   /* ---------------- IMAGE HANDLER ---------------- */
   const handleImageChange = (index, file) => {
+    if (!file) return;
     const updated = [...images];
     updated[index] = file;
     setImages(updated);
@@ -41,8 +42,18 @@ const Add = ({ token }) => {
       return;
     }
 
+    if (!name.trim() || !description.trim() || !price) {
+      alert("Please fill all required fields");
+      return;
+    }
+
     if (sizes.length === 0) {
       alert("Please select at least one size");
+      return;
+    }
+
+    if (!images.some((img) => img !== null)) {
+      alert("Please upload at least one product image");
       return;
     }
 
@@ -50,8 +61,8 @@ const Add = ({ token }) => {
 
     try {
       const formData = new FormData();
-      formData.append("name", name);
-      formData.append("description", description);
+      formData.append("name", name.trim());
+      formData.append("description", description.trim());
       formData.append("category", category);
       formData.append("subCategory", subCategory);
       formData.append("price", price);
@@ -69,7 +80,7 @@ const Add = ({ token }) => {
         formData,
         {
           headers: {
-            token: token, // 🔥 THIS IS CRITICAL
+            Authorization: `Bearer ${token}`, // ✅ FIXED
           },
         }
       );
@@ -88,9 +99,7 @@ const Add = ({ token }) => {
         alert(data.message || "Failed to add product");
       }
     } catch (error) {
-      alert(
-        error.response?.data?.message || "Something went wrong"
-      );
+      alert(error.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -108,7 +117,6 @@ const Add = ({ token }) => {
           {images.map((img, index) => (
             <label
               key={index}
-              htmlFor={`image${index}`}
               className="cursor-pointer border rounded-lg overflow-hidden aspect-square flex items-center justify-center bg-gray-50"
             >
               <img
@@ -118,7 +126,6 @@ const Add = ({ token }) => {
               />
               <input
                 type="file"
-                id={`image${index}`}
                 hidden
                 accept="image/*"
                 onChange={(e) =>
@@ -138,8 +145,7 @@ const Add = ({ token }) => {
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Type here"
-          className="w-full border px-4 py-2 rounded-lg outline-none focus:ring-2 focus:ring-black"
+          className="w-full border px-4 py-2 rounded-lg"
         />
       </div>
 
@@ -150,51 +156,35 @@ const Add = ({ token }) => {
           required
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Write content here"
           rows={4}
-          className="w-full border px-4 py-2 rounded-lg outline-none focus:ring-2 focus:ring-black"
+          className="w-full border px-4 py-2 rounded-lg"
         />
       </div>
 
       {/* ---------------- CATEGORY ---------------- */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div>
-          <p className="font-medium mb-1">Category</p>
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="w-full border px-4 py-2 rounded-lg"
-          >
-            <option>Men</option>
-            <option>Women</option>
-            <option>Kids</option>
-          </select>
-        </div>
+        <select value={category} onChange={(e) => setCategory(e.target.value)}>
+          <option>Men</option>
+          <option>Women</option>
+          <option>Kids</option>
+        </select>
 
-        <div>
-          <p className="font-medium mb-1">Sub Category</p>
-          <select
-            value={subCategory}
-            onChange={(e) => setSubCategory(e.target.value)}
-            className="w-full border px-4 py-2 rounded-lg"
-          >
-            <option>Topwear</option>
-            <option>Bottomwear</option>
-            <option>Winterwear</option>
-          </select>
-        </div>
+        <select
+          value={subCategory}
+          onChange={(e) => setSubCategory(e.target.value)}
+        >
+          <option>Topwear</option>
+          <option>Bottomwear</option>
+          <option>Winterwear</option>
+        </select>
 
-        <div>
-          <p className="font-medium mb-1">Price</p>
-          <input
-            type="number"
-            required
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            placeholder="25"
-            className="w-full border px-4 py-2 rounded-lg"
-          />
-        </div>
+        <input
+          type="number"
+          required
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+          placeholder="Price"
+        />
       </div>
 
       {/* ---------------- SIZES ---------------- */}
@@ -206,7 +196,7 @@ const Add = ({ token }) => {
               type="button"
               key={size}
               onClick={() => toggleSize(size)}
-              className={`px-4 py-1 border rounded-md text-sm font-medium
+              className={`px-4 py-1 border rounded-md
                 ${
                   sizes.includes(size)
                     ? "bg-black text-white"
@@ -226,14 +216,14 @@ const Add = ({ token }) => {
           checked={bestseller}
           onChange={(e) => setBestseller(e.target.checked)}
         />
-        <label className="text-sm">Add to bestseller</label>
+        <label>Add to bestseller</label>
       </div>
 
       {/* ---------------- BUTTON ---------------- */}
       <button
         type="submit"
         disabled={loading}
-        className="px-8 py-2 bg-black text-white rounded-lg hover:bg-gray-900 disabled:opacity-50"
+        className="px-8 py-2 bg-black text-white rounded-lg disabled:opacity-50"
       >
         {loading ? "Adding..." : "ADD PRODUCT"}
       </button>

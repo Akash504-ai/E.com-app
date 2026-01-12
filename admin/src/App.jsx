@@ -10,7 +10,7 @@ import Login from "./components/Login";
 export const backendurl = import.meta.env.VITE_BACKEND_URL;
 
 const App = () => {
-  const [token, setToken] = useState("");
+  const [token, setToken] = useState("null");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -41,6 +41,7 @@ const App = () => {
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
           <div className="bg-white rounded-xl shadow-sm p-4 md:p-6 min-h-full">
             <Routes>
+              <Route path="/" element={<Add token={token} />} />
               <Route path="/add" element={<Add token={token} />} />
               <Route path="/list" element={<List token={token} />} />
               <Route path="/orders" element={<Order token={token} />} />
