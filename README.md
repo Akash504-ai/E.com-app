@@ -3,9 +3,9 @@
 A production-ready e-commerce platform built using the MERN stack, featuring secure authentication, Stripe payments, admin dashboard, cloud image uploads, and AI-powered customer support.
 
 🔗 Live Project Links
-- 🛍️ User Website: https://e-com-app-swart.vercel.app
-- 🛠️ Admin Panel: https://e-com-app-j53n.vercel.app
-- ⚙️ Backend API: https://e-com-app-e2st.onrender.com
+- 🛍️ User Website: [https://e-com-app-swart.vercel.app](https://e-com-app-taupe.vercel.app/)
+- 🛠️ Admin Panel: [https://e-com-app-j53n.vercel.app](https://e-com-app-jbra.vercel.app/)
+- ⚙️ Backend API: [https://e-com-app-e2st.onrender.com](https://e-com-app-e2st.onrender.com)
 
 📌 Overview
 
@@ -65,6 +65,7 @@ Website workflow
 ![alt text](image.png)
 
 🧱 Project Structure
+```bash
 E.com-app/
 │
 ├── frontend/        # User website
@@ -77,7 +78,7 @@ E.com-app/
 │   └── server.js
 │
 └── README.md
-
+```
 
 ⚙️ Environment Variables
 Backend .env
@@ -93,8 +94,8 @@ Frontend / Admin
 
 🚀 Getting Started (Local Setup)
 - 1️⃣ Clone Repository
-    git clone https://github.com/Akash504-ai/E.com-app.git
-    cd E.com-app
+    - git clone https://github.com/Akash504-ai/E.com-app.git
+    - cd E.com-app
 
 - 2️⃣ Backend
     cd backend
