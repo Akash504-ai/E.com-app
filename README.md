@@ -1,4 +1,4 @@
-🛒 DailyFit – Full Stack E-Commerce Platform (MERN)
+## 🛒 DailyFit – Full Stack E-Commerce Platform (MERN)
 
 A production-ready e-commerce platform built using the MERN stack, featuring secure authentication, Stripe payments, admin dashboard, cloud image uploads, and AI-powered customer support.
 
@@ -13,7 +13,7 @@ A production-ready e-commerce platform built using the MERN stack, featuring sec
 ⚙️ **Backend API**  
 👉 [https://e-com-app-e2st.onrender.com](https://e-com-app-e2st.onrender.com)
 
-📌 Overview
+## 📌 Overview
 
 DailyFit is a real-world e-commerce application that allows users to browse products, manage carts, place orders, and make secure payments, while providing admins full control over products and orders.
 
@@ -23,9 +23,9 @@ This project follows industry-standard architecture with:
 - Centralized Backend API
 - Third-party services (Stripe, Cloudinary, Chatbase)
 
-✨ Features
+## ✨ Features
 
-🧑‍💻 User Features
+ 🧑‍💻 **User Features**
 
 - Browse products & collections
 - Product details with size selection
@@ -36,7 +36,7 @@ This project follows industry-standard architecture with:
 - View order history & order status
 - AI chatbot for instant support
 
-🛠️ Admin Features
+🛠️ **Admin Features**
 
 - Admin authentication
 - Add / edit / delete products
@@ -44,15 +44,15 @@ This project follows industry-standard architecture with:
 - View all user orders
 - Update order status (Placed → Delivered)
 
-🏗️ Tech Stack
-Frontend (User + Admin)
+## 🏗️ Tech Stack
+**Frontend** (User + Admin)
 - React (Vite)
 - Tailwind CSS
 - Axios
 - React Router
 - React Toastify
 
-Backend
+**Backend**
 - Node.js
 - Express.js
 - MongoDB (Mongoose)
@@ -60,17 +60,17 @@ Backend
 - Stripe API
 - Cloudinary
 
-Other Services
+**Other Services**
 - Stripe – Payments
 - Cloudinary – Image hosting
 - Chatbase – AI customer support chatbot
 - Vercel – Frontend & Admin hosting
 - Render – Backend hosting
 
-Website workflow 
+## Website workflow 
 ![alt text](image.png)
 
-🧱 Project Structure
+## 🧱 Project Structure
 ```bash
 E.com-app/
 │
@@ -86,7 +86,7 @@ E.com-app/
 └── README.md
 ```
 
-⚙️ Environment Variables
+⚙️ **Environment Variables**
 Backend .env
 -     MONGO_URI=
 -     JWT_SECRET=
@@ -118,7 +118,7 @@ Frontend / Admin
     npm install
     npm run dev
 
-🏆 What This Project Demonstrates
+🏆 **What This Project Demonstrates**
 - ✔ Full MERN stack mastery
 - ✔ Secure authentication
 - ✔ Payment gateway integration
@@ -127,9 +127,9 @@ Frontend / Admin
 - ✔ Production deployment
 - ✔ Clean code organization
 
-👨‍💻 Author
+## 👨‍💻 Author
 
-Akash Santra
+**Akash Santra**
 🔗 GitHub: https://github.com/Akash504-ai
 
 ⭐ Final Note
