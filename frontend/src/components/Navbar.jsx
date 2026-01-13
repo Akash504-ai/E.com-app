@@ -43,7 +43,7 @@ const Navbar = () => {
           <img
             src={assets.logo}
             alt="DailyFit"
-            className="h-11 cursor-pointer"
+            className="h-10 scale-180 origin-left cursor-pointer"
           />
         </Link>
 
