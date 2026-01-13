@@ -2,10 +2,16 @@
 
 A production-ready e-commerce platform built using the MERN stack, featuring secure authentication, Stripe payments, admin dashboard, cloud image uploads, and AI-powered customer support.
 
-🔗 Live Project Links
-- 🛍️ User Website: [https://e-com-app-swart.vercel.app](https://e-com-app-taupe.vercel.app/)
-- 🛠️ Admin Panel: [https://e-com-app-j53n.vercel.app](https://e-com-app-jbra.vercel.app/)
-- ⚙️ Backend API: [https://e-com-app-e2st.onrender.com](https://e-com-app-e2st.onrender.com)
+## 🌐 Live Links
+
+🛍️ **User Website**  
+👉 https://e-com-app-swart.vercel.app
+
+🛠️ **Admin Panel**  
+👉 https://e-com-app-j53n.vercel.app
+
+⚙️ **Backend API**  
+👉 https://e-com-app-e2st.onrender.com
 
 📌 Overview
 
